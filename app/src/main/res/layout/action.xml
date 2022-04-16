@@ -1,0 +1,72 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginTop="8dp"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/pid"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="0.70"
+                android:background="#BB7281"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="1dp"
+                android:text="Time"
+                android:textAllCaps="false"
+                android:textColor="#000"
+                android:textSize="14dp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/action"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="70dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="1dp"
+                android:text="Action"
+                android:textAllCaps="false"
+                android:textColor="#000"
+                android:textSize="14dp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/ssid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="155dp"
+                android:text="SSID"
+                android:textAllCaps="false"
+                android:textColor="#000"
+                android:textSize="16dp"
+                android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="35dp"
+                android:layout_alignParentEnd="true"
+                android:text="Level"
+                android:textAllCaps="false"
+                android:textColor="#000"
+                android:textSize="16dp"
+                android:textStyle="italic" />
+
+    </RelativeLayout>
+</LinearLayout>
