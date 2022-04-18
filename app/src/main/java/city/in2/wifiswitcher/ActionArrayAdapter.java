@@ -1,4 +1,4 @@
-package city.in2.wifiswitcher2;
+package city.in2.wifiswitcher;
 
 import android.app.Activity;
 import android.content.Context;

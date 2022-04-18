@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="city.in2.wifiswitcher2">
+    package="city.in2.wifiswitcher">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -9,8 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.LOCAL_MAC_ADDRESS"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.LOCAL_MAC_ADDRESS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -19,22 +18,29 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/wifi"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        android:theme="@android:style/Theme.Translucent.NoTitleBar">
         <activity
-            android:name="city.in2.wifiswitcher2.MainActivity"
+            android:name="city.in2.wifiswitcher.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="city.in2.wifiswitcher2.Settings"
+        <activity android:name="city.in2.wifiswitcher.Settings"
             android:label="@string/app_name" android:screenOrientation="portrait"
             android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
-        <activity android:name="city.in2.wifiswitcher2.View_Action"
+        <activity android:name="city.in2.wifiswitcher.Scan"
             android:label="@string/app_name" android:screenOrientation="portrait"
             android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
-        <service android:name="city.in2.wifiswitcher2.BackgroundService" />
+        <activity android:name="city.in2.wifiswitcher.AddEditNetwork"
+            android:label="@string/app_name" android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
+        <activity android:name="city.in2.wifiswitcher.View_Action"
+            android:label="@string/app_name" android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
+
+        <service android:name="city.in2.wifiswitcher.BackgroundService" />
     </application>
 
 </manifest>

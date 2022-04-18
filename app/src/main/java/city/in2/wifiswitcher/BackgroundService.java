@@ -1,4 +1,4 @@
-package city.in2.wifiswitcher2;
+package city.in2.wifiswitcher;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +24,7 @@ public class BackgroundService extends android.app.Service {
     int netId;
     Vibrator v;
 
-    int interval = 5000;
+    int interval = 2000;
     byte imageInByte[];
 
     private static ThreadDemo td;

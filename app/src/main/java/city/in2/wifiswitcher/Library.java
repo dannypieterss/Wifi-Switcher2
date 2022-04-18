@@ -1,4 +1,4 @@
-package city.in2.wifiswitcher2;
+package city.in2.wifiswitcher;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

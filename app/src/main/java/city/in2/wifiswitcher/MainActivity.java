@@ -1,4 +1,4 @@
-package city.in2.wifiswitcher2;
+package city.in2.wifiswitcher;
 
 import android.app.Activity;
 import android.content.Context;
@@ -67,9 +67,17 @@ public class MainActivity extends Activity {
 
         int rssi = wifiManager.getConnectionInfo().getRssi();
 
+        settings = (Button) findViewById(R.id.settings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, Settings.class);
+//                myIntent.putExtra("key", value); //Optional parameters
+                MainActivity.this.startActivity(myIntent);
+            }
+        });
 
         start_service = (Button) findViewById(R.id.start_service);
-        settings = (Button) findViewById(R.id.settings);
         start_service.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,21 +95,13 @@ public class MainActivity extends Activity {
             }
         });
 
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(MainActivity.this, Settings.class);
-//                myIntent.putExtra("key", value); //Optional parameters
-                MainActivity.this.startActivity(myIntent);
-            }
-        });
 
         stringMac = getMacAddress();
 //        Log.d("MyMacIS", mobile_mac_address);
 //        macaddress.setText(mobile_mac_address);
 
-//        Intent myIntent = new Intent(MainActivity.this, Settings.class);
-//        MainActivity.this.startActivity(myIntent);
+        Intent myIntent = new Intent(MainActivity.this, Settings.class);
+        MainActivity.this.startActivity(myIntent);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -133,8 +133,6 @@ public class MainActivity extends Activity {
 //                overridePendingTransition(R.anim.fade_in, R.anim.fade_in);
             }
         });
-
-
     }
 
     public void updateActions() {

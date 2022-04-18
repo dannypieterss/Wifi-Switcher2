@@ -4,6 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Android/wifi-switcher/app/src/main/res/layout/activity_main.xml" value="0.3541666666666667" />
+        <entry key="..\:/Android/wifi-switcher2/app/src/main/res/layout/action.xml" value="0.3541666666666667" />
+        <entry key="..\:/Android/wifi-switcher2/app/src/main/res/layout/activity_main.xml" value="0.3541666666666667" />
+        <entry key="..\:/Android/wifi-switcher2/app/src/main/res/layout/add_network.xml" value="0.3458333333333333" />
+        <entry key="..\:/Android/wifi-switcher2/app/src/main/res/layout/scan.xml" value="0.3541666666666667" />
+        <entry key="..\:/Android/wifi-switcher2/app/src/main/res/layout/settings.xml" value="0.3541666666666667" />
+        <entry key="..\:/Android/wifi-switcher2/app/src/main/res/layout/ssid_row.xml" value="0.3541666666666667" />
         <entry key="..\:/Github/WifiSwitcher/app/src/main/res/layout/action.xml" value="0.3458333333333333" />
         <entry key="..\:/Github/WifiSwitcher/app/src/main/res/layout/activity_main.xml" value="0.3458333333333333" />
         <entry key="..\:/Github/WifiSwitcher/app/src/main/res/layout/settings.xml" value="0.3458333333333333" />
