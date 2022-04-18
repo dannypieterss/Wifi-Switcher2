@@ -83,7 +83,20 @@ public class Settings extends Activity {
             @Override
             public void onClick(View view) {
                 if(getCurrentSsid()) {
-                    if (db.checkNetwork(network_name.getText().toString()) > 0) {
+                    if (db.checkNetwork(network_name.getText().toString()) == 0) {
+
+
+
+                    }  else {
+                        // network name does not exist in de the database
+                        library.Toast("Network does not exist");
+                        db.addNetwork(new Network(network_name.getText().toString()));
+                        if (db.checkBSSID(ssid) == 0) {
+                            library.Toast("Create BSSID");
+                            db.addBSSID(new BSSID(ssid, bssid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+                            updateUI();
+                        }
+
                         Network network = db.getNetworkByName(network_name.getText().toString());
                         library.Toast("Network does exist" + network.get_ssid() + " <---");
                         if (db.checkBSSID(bssid) > 0) {
@@ -99,22 +112,13 @@ public class Settings extends Activity {
                         } else {
                             library.Toast("BSSID does exist");
                         }
-                    } else {
-                        // network name does not exist in de the database
-                        library.Toast("Network does not exist");
-                        db.addNetwork(new Network(network_name.getText().toString()));
-                        if (db.checkBSSID(ssid) == 0) {
-                            library.Toast("Create BSSID");
-                            db.addBSSID(new BSSID(ssid, bssid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-                            updateUI();
-                        }
                     }
                 } else {
 
 //                    db.addNetwork(new Network("", "", "", "", ""));
 //                    library._set("ssid", network_name.getText().toString());
 //                library.Toast("SSID -> " + network_name.getText().toString());
-                    if (!db.checkNetwork(network_name.getText().toString())) {
+                    if (db.checkNetwork(network_name.getText().toString()) == 1) {
                         library.Toast("Network exists!");
                     } else {
                         db.addNetwork(new Network(network_name.getText().toString()));

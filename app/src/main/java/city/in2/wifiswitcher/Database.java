@@ -126,7 +126,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public int checkNetwork(String name) {
-        Cursor c = query("SELECT * FROM " + TABLE_NETWORKS + " WHERE " + NETWORK + " = ? LIMIT 1", new String[]{String.valueOf(name)});
+        Cursor c = query("SELECT * FROM " + TABLE_NETWORKS + " WHERE " + NETWORK + " = ?", new String[]{String.valueOf(name)});
         int count = 0;
         if (c.moveToFirst())
             count = c.getCount();
@@ -135,7 +135,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public int checkBSSID(String name) {
-        Cursor c = query("SELECT * FROM " + TABLE_BSSID + " WHERE " + BSSID + " = ? LIMIT 1", new String[]{String.valueOf(name)});
+        Cursor c = query("SELECT * FROM " + TABLE_BSSID + " WHERE " + BSSID + " = ?", new String[]{String.valueOf(name)});
         int count = 0;
         if (c.moveToFirst())
             count = c.getCount();
