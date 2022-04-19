@@ -17,12 +17,12 @@ public class Database extends SQLiteOpenHelper {
     static SQLiteDatabase db;
 
     byte[] image;
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "wifi_updater";
 
     private static final String TABLE_ACTIONS = "actions";
     private static final String TABLE_NETWORKS = "networks";
-    private static final String TABLE_BSSID = "bssid";
+    private static final String TABLE_BSSID = "bssids";
     private static final String TABLE_LEVELS = "levels";
 
     private static final String KEY_ID = "_id";
@@ -34,6 +34,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String DESCRIPTION = "description";
 
     private static final String BSSID = "bssid";
+    private static final String NAME = "name";
 
     private static final String LEVEL1 = "_level1";
     private static final String LEVEL2 = "_level2";
@@ -61,7 +62,6 @@ public class Database extends SQLiteOpenHelper {
     private static final String CREATE_NETWORKS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NETWORKS + " ("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + NETWORK + " TEXT, "
-            + SSID + " TEXT, "
             + DATE_CREATED + " TEXT )";
 
 
@@ -69,6 +69,7 @@ public class Database extends SQLiteOpenHelper {
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + SSID + " TEXT, "
             + BSSID + " TEXT, "
+            + NAME + " TEXT, "
 
             + LEVEL + " TEXT, "
 
@@ -152,7 +153,7 @@ public class Database extends SQLiteOpenHelper {
         return item;
     }
 
-    public ArrayList<BSSID> getBSSIDSName(String v) {
+    public ArrayList<BSSID> getBSSIDbySSID(String v) {
         Cursor c = query("SELECT * FROM " + TABLE_BSSID + " WHERE " + SSID + " = ? LIMIT 1", new String[]{String.valueOf(v)});
         ArrayList<BSSID> items = new ArrayList<BSSID>();
         if (c.moveToFirst())
@@ -194,16 +195,16 @@ public class Database extends SQLiteOpenHelper {
 //    }
 
     public ArrayList<Network> getNetworks() {
-        ArrayList<Network> actions = new ArrayList<Network>();
+        ArrayList<Network> networks = new ArrayList<Network>();
         Cursor c = query("SELECT * FROM " + TABLE_NETWORKS, null);
         if (c.moveToFirst()) {
             c.moveToFirst();
             do {
-                actions.add(setNetwork(c));
+                networks.add(setNetwork(c));
             } while (c.moveToNext());
         }
         c.close();
-        return actions;
+        return networks;
     }
 
     public ArrayList<Action> getActions() {
@@ -255,9 +256,6 @@ public class Database extends SQLiteOpenHelper {
     public void addNetwork(Network network) {
         ContentValues values = new ContentValues();
         values.put(NETWORK, network.get_network());
-        values.put(SSID, network.get_ssid());
-        values.put(BSSID, network.get_bssid());
-        values.put(LEVEL, network.get_level());
         values.put(DATE_CREATED, network.get_date_created());
         insertNetwork(values);
     }
@@ -266,6 +264,8 @@ public class Database extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(SSID, bssid.get_ssid());
         values.put(BSSID, bssid.get_bssid());
+        values.put(NAME, bssid.get_name());
+
         values.put(LEVEL, bssid.get_level());
 
         values.put(LEVEL1, bssid.get_level1());
@@ -286,9 +286,6 @@ public class Database extends SQLiteOpenHelper {
         Network network = new Network();
         network.set_id(getInt(c, KEY_ID));
         network.set_network(getString(c, NETWORK));
-        network.set_ssid(getString(c, SSID));
-        network.set_bssid(getString(c, BSSID));
-        network.set_level(getString(c, LEVEL));
         network.set_date_created(getString(c, DATE_CREATED));
         return network;
     }
@@ -296,8 +293,6 @@ public class Database extends SQLiteOpenHelper {
     public void updateNetwork(Network network) {
         ContentValues values = new ContentValues();
         values.put(NETWORK, network.get_network());
-        values.put(SSID, network.get_ssid());
-        values.put(BSSID, network.get_bssid());
         values.put(DATE_CREATED, network.get_date_created());
         updateNetworkDatabase(values, network.get_id());
     }
@@ -307,6 +302,7 @@ public class Database extends SQLiteOpenHelper {
         action.set_id(getInt(c, KEY_ID));
         action.set_ssid(getString(c, SSID));
         action.set_bssid(getString(c, BSSID));
+        action.set_name(getString(c, NAME));
 
         action.set_level(getInt(c, LEVEL));
 
@@ -327,6 +323,7 @@ public class Database extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(SSID, bssid.get_ssid());
         values.put(BSSID, bssid.get_bssid());
+        values.put(NAME, bssid.get_name());
 
         values.put(LEVEL, bssid.get_level());
 
@@ -425,7 +422,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public String getTime() {
-        return new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date()).toString();
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()).toString();
     }
 
     public Cursor query(String sql, String[] args) {

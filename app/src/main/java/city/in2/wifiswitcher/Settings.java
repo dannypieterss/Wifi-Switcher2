@@ -1,18 +1,24 @@
 package city.in2.wifiswitcher;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -25,10 +31,14 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.core.app.ActivityCompat;
+
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Settings extends Activity {
@@ -46,10 +56,13 @@ public class Settings extends Activity {
     EditText network_name;
     CheckBox level1, level2, level3, level4, level5, level6, level7, level8, level9, level10;
     int _level1 = 0, _level2 = 0, _level3 = 0, _level4 = 0, _level5 = 0, _level6 = 0, _level7 = 0, _level8 = 0, _level9 = 0, _level10 = 0;
-
+    int level = 0;
     Context context;
     String ssid, bssid;
     Display display;
+
+    ArrayList<Network> networks;
+    TextView result2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +78,19 @@ public class Settings extends Activity {
 //        }
 
         // you need to have a list of data that you want the spinner to display
-
-
+        networks = db.getNetworks();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (library._get("changes").equals("1")) {
+                    library.Toast("Changes detected");
+                    library._set("changes", "0");
+                    updateUI();
+                }
+                handler.postDelayed(this, 5000);
+            }
+        }, 1000); //the time you want to delay in milliseconds
 
 
         String SSID = library._get("ssid");
@@ -78,51 +102,59 @@ public class Settings extends Activity {
         network_name = (EditText) findViewById(R.id.network_name);
 //        network_name.setText(SSID);
 
+        ArrayList<Network> networks = db.getNetworks();
+//        library.Toast("Networks: " + networks.size());
+
         save_network_name = (Button) findViewById(R.id.save_network_name);
         save_network_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(getCurrentSsid()) {
+                if (getCurrentSsid()) {
                     if (db.checkNetwork(network_name.getText().toString()) == 0) {
-
-
-
-                    }  else {
-                        // network name does not exist in de the database
-                        library.Toast("Network does not exist");
-                        db.addNetwork(new Network(network_name.getText().toString()));
-                        if (db.checkBSSID(ssid) == 0) {
+                        library.Toast("Create network");
+                        db.addNetwork(new Network(network_name.getText().toString(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()).toString()));
+                        if (db.checkBSSID(bssid) == 0) {
                             library.Toast("Create BSSID");
-                            db.addBSSID(new BSSID(ssid, bssid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+                            db.addBSSID(new BSSID(ssid, bssid, "", level, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
                             updateUI();
                         }
 
-                        Network network = db.getNetworkByName(network_name.getText().toString());
-                        library.Toast("Network does exist" + network.get_ssid() + " <---");
-                        if (db.checkBSSID(bssid) > 0) {
-                            ArrayList<BSSID> ssids = db.getBSSIDSName(network.get_ssid());
-                            if (ssids.size() > 0) {
-                                library.Toast("We have found more than one!");
-                            } else if (ssids.size() == 1) {
-                                library.Toast("We have found one!");
-                            } else {
-                                library.Toast("We have to create a BSSID!");
-                                db.addBSSID(new BSSID(ssid, bssid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-                            }
-                        } else {
-                            library.Toast("BSSID does exist");
+
+                    } else {
+                        // network name does not exist in de the database
+                        library.Toast("Network does exist");
+                        if (db.checkBSSID(bssid) == 0) {
+                            library.Toast("Create BSSID");
+                            db.addBSSID(new BSSID(ssid, bssid, "", level, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+                            updateUI();
                         }
+
+//                        Network network = db.getNetworkByName(network_name.getText().toString());
+//                        library.Toast("Network does exist" + network.get_ssid() + " <---");
+//                        if (db.checkBSSID(bssid) > 0) {
+//                            ArrayList<BSSID> ssids = db.getBSSIDSName(network.get_ssid());
+//                            if (ssids.size() > 0) {
+//                                library.Toast("We have found more than one!");
+//                            } else if (ssids.size() == 1) {
+//                                library.Toast("We have found one!");
+//                            } else {
+//                                library.Toast("We have to create a BSSID!");
+//                                db.addBSSID(new BSSID(ssid, bssid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+//                            }
+//                        } else {
+//                            library.Toast("BSSID does exist");
+//                        }
                     }
                 } else {
-
+                    library.Toast("Something went wrong");
 //                    db.addNetwork(new Network("", "", "", "", ""));
 //                    library._set("ssid", network_name.getText().toString());
 //                library.Toast("SSID -> " + network_name.getText().toString());
-                    if (db.checkNetwork(network_name.getText().toString()) == 1) {
-                        library.Toast("Network exists!");
-                    } else {
-                        db.addNetwork(new Network(network_name.getText().toString()));
-                    }
+//                    if (db.checkNetwork(network_name.getText().toString()) == 1) {
+//                        library.Toast("Network exists!");
+//                    } else {
+//                        db.addNetwork(new Network(network_name.getText().toString()));
+//                    }
                 }
             }
         });
@@ -135,6 +167,8 @@ public class Settings extends Activity {
                 return false;
             }
         });
+        result2 = (TextView) findViewById(R.id.result);
+        getCurrentSsid(getApplicationContext());
 
         level1 = (CheckBox) findViewById(R.id.level1);
         level2 = (CheckBox) findViewById(R.id.level2);
@@ -335,6 +369,83 @@ public class Settings extends Activity {
             @Override
             public void onClick(View view) {
 
+                WifiManager wifiManager;
+                wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+                int rssi = wifiManager.getConnectionInfo().getRssi();
+                level = WifiManager.calculateSignalLevel(rssi, 10);
+
+                WifiInfo info = wifiManager.getConnectionInfo();
+
+                ssid = info.getSSID().replace("\"", "");
+
+//                bssid = info.getMacAddress();
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+//                library.Toast(bssid);
+
+//                if (ssid.equals(network_name.getText().toString())) {
+                    library.Toast("Is connected to network " + ssid);
+
+                    if (db.checkBSSID(bssid) == 0) {
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+//                        library.Toast("Creating BSSID");
+
+                        db.addBSSID(new BSSID(ssid, bssid, "", level, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+                        updateUI();
+                    } else {
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+//                        library.Toast("BSSID exist!");
+                    }
+
+//                }
+
+
+
                 WifiConfiguration wifiConfig = new WifiConfiguration();
 
                 wifiConfig.SSID = String.format("\"%s\"", ssid);
@@ -390,7 +501,7 @@ public class Settings extends Activity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         int rssi = wifiManager.getConnectionInfo().getRssi();
-        int level = WifiManager.calculateSignalLevel(rssi, 10);
+        level = WifiManager.calculateSignalLevel(rssi, 10);
 
         WifiInfo info = wifiManager.getConnectionInfo();
 
@@ -399,6 +510,7 @@ public class Settings extends Activity {
 
         if (ssid.equals(network_name.getText().toString())) {
             library.Toast("Is connected to network " + ssid);
+            library.Toast("BSSID => " + bssid);
             return true;
         } else {
             ssid = "";
@@ -411,37 +523,87 @@ public class Settings extends Activity {
         networks_from_database.removeAllViews();
         ArrayList<Network> networks = db.getNetworks();
         library.Toast("Networks: " + networks.size());
-        RelativeLayout.LayoutParams LayoutParamsview = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-        LinearLayout _network_name = new LinearLayout(this);
-        _network_name.setLayoutParams(LayoutParamsview);
-        _network_name.setOrientation(LinearLayout.VERTICAL);
-        _network_name.setBackgroundColor(Color.parseColor("#ff7800"));
-        TextView tv = new TextView(this);
-        tv.setTextSize(40);
-        tv.setTextColor(Color.WHITE);
-        tv.setText(ssid + " Tele2-2 ");
-        _network_name.setPadding(20, 20, 20, 20);
-        _network_name.addView(tv);
+        for (int x=0; x < networks.size(); x++) {
+            if (networks.size() > 0) {
+
+                RelativeLayout.LayoutParams LayoutParamsview = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                LinearLayout _network_name = new LinearLayout(this);
+                _network_name.setLayoutParams(LayoutParamsview);
+                _network_name.setOrientation(LinearLayout.VERTICAL);
+                _network_name.setBackgroundColor(Color.parseColor("#ff7800"));
+                TextView tv = new TextView(this);
+                tv.setTextSize(40);
+                tv.setTextColor(Color.WHITE);
+                tv.setText(networks.get(x).get_network() + " Tele2-2 ");
+                _network_name.setPadding(20, 20, 20, 20);
+                _network_name.addView(tv);
 
 //        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)tv.getLayoutParams();
 //        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 //        tv.setLayoutParams(layoutParams);
+//                library.Toast(networks.get(x).get_network());
+//                library.Toast(networks.get(x).get_network());
+//                library.Toast(networks.get(x).get_network());
+//
+//                library.Toast(networks.get(x).get_network());
+//
+//                library.Toast(networks.get(x).get_network());
+//
+//                library.Toast(networks.get(x).get_network());
 
-        LinearLayout cols = new LinearLayout(this);
-        int width=display.getWidth();
-        int height= 60; // display.getHeight();
-        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(width,height);
 
-        cols.setOrientation(LinearLayout.VERTICAL);
-        cols.setPadding(30, 30, 30, 30);
-        cols.setBackgroundColor(Color.WHITE);
-        cols.setId(1);
-        TextView bssid_textview = new TextView(this);
-        bssid_textview.setText("BSSID");
-        bssid_textview.setTextSize(25);
-        bssid_textview.setTextColor(Color.BLACK);
-        cols.addView(bssid_textview);
+                ArrayList<BSSID> bssids = db.getBSSIDbySSID(networks.get(x).get_network());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+//                library.Toast("BSSID count: " + bssids.size());
+                if (bssids.size() > 0) {
+                    for (int y = 0; y < bssids.size(); y++) {
+                        LinearLayout cols = new LinearLayout(this);
+                        int width = display.getWidth();
+                        int height = 60; // display.getHeight();
+                        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(width, height);
+
+                        cols.setOrientation(LinearLayout.VERTICAL);
+                        cols.setPadding(30, 30, 30, 30);
+                        cols.setBackgroundColor(Color.WHITE);
+//        cols.setId(1);
+                        TextView bssid_textview = new TextView(this);
+                        bssid_textview.setText("BSSID => " + bssids.get(y).get_bssid());
+                        bssid_textview.setAllCaps(true);
+
+                        bssid_textview.setTextSize(25);
+                        bssid_textview.setTextColor(Color.BLACK);
+                        cols.addView(bssid_textview);
+
+                        LinearLayout cols2 = new LinearLayout(this);
+
+
+
+                        cols.setOrientation(LinearLayout.VERTICAL);
+                        cols.setPadding(30, 30, 30, 30);
+                        cols.setBackgroundColor(Color.WHITE);
+//        cols.setId(1);
+                        TextView bssid_textview2 = new TextView(this);
+                        bssid_textview2.setText("BSSID => " + bssids.get(y).get_bssid());
+                        bssid_textview2.setAllCaps(true);
+
+                        bssid_textview2.setTextSize(25);
+                        bssid_textview2.setTextColor(Color.BLACK);
+                        cols.addView(bssid_textview2);
+
+                        _network_name.addView(cols);
+                        _network_name.addView(cols2);
+                    }
+                }
+
 //        View line = new View(this);
 //
 //        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 1, getResources().getDisplayMetrics());
@@ -452,13 +614,56 @@ public class Settings extends Activity {
 //        ruler.setLayoutParams(_ruler);
 //        cols.addView(ruler);
 
-        TextView ssid_textview = new TextView(this);
-        ssid_textview.setText("SSID");
-        ssid_textview.setTextSize(25);
-        ssid_textview.setTextColor(Color.BLACK);
-        cols.addView(ssid_textview);
-        _network_name.addView(cols);
-        networks_from_database.addView(_network_name);
+//            TextView ssid_textview = new TextView(this);
+//            ssid_textview.setText("SSID");
+//            ssid_textview.setTextSize(25);
+//            ssid_textview.setTextColor(Color.BLACK);
+//            cols.addView(ssid_textview);
+                networks_from_database.addView(_network_name);
 //        networks_from_database.addView(cols);
+
+            }
+        }
+
+    }
+
+    public String getCurrentSsid(Context context) {
+
+        String ssid = null;
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (networkInfo.isConnected()) {
+            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+            if (connectionInfo != null && !(connectionInfo.getSSID().equals(""))) {
+                //if (connectionInfo != null && !StringUtil.isBlank(connectionInfo.getSSID())) {
+                ssid = connectionInfo.getSSID();
+            }
+            // Get WiFi status MARAKANA
+            WifiInfo info = wifiManager.getConnectionInfo();
+            String textStatus = "";
+            textStatus += "\n\nWiFi Status: " + info.toString();
+            String BSSID = info.getBSSID();
+            @SuppressLint("MissingPermission") String MAC = info.getMacAddress();
+
+            List<ScanResult> results = wifiManager.getScanResults();
+            ScanResult bestSignal = null;
+            int count = 1;
+            String etWifiList = "";
+            for (ScanResult result : results) {
+                etWifiList += count++ + ". " + result.SSID + " : " + result.level + "\n" +
+                        result.BSSID + "\n" + result.capabilities +"\n" +
+                        "\n=======================\n";
+            }
+            Log.v("WIFI", "from SO: \n"+etWifiList);
+
+            // List stored networks
+            @SuppressLint("MissingPermission") List<WifiConfiguration> configs = wifiManager.getConfiguredNetworks();
+            for (WifiConfiguration config : configs) {
+                textStatus+= "\n\n" + config.toString();
+            }
+            Log.v("WIFI","from marakana: \n"+textStatus);
+        }
+        return ssid;
     }
 }

@@ -2,13 +2,14 @@ package city.in2.wifiswitcher;
 
 public class BSSID {
 
-    String _ssid, _bssid;
+    String _ssid, _bssid, _name;
     int _id, _level, _level1, _level2, _level3, _level4,  _level5, _level6, _level7, _level8, _level9, _level10;
 
-    public BSSID(int id, String ssid, int level, String bssid,  int level1, int level2, int level3, int level4, int level5, int level6, int level7, int level8, int level9, int level10) {
+    public BSSID(int id, String ssid, String bssid, String name, int level,  int level1, int level2, int level3, int level4, int level5, int level6, int level7, int level8, int level9, int level10) {
         this._id = id;
         this._ssid = ssid;
         this._bssid = bssid;
+        this._name = name;
 
         this._level = level;
 
@@ -24,9 +25,10 @@ public class BSSID {
         this._level10 = level10;
     }
 
-    public BSSID(String ssid, String bssid, int level, int level1, int level2, int level3, int level4, int level5, int level6, int level7, int level8, int level9, int level10) {
+    public BSSID(String ssid, String bssid, String name, int level, int level1, int level2, int level3, int level4, int level5, int level6, int level7, int level8, int level9, int level10) {
         this._ssid = ssid;
         this._bssid = bssid;
+        this._name = name;
 
         this._level = level;
 
@@ -68,6 +70,14 @@ public class BSSID {
 
     public void set_bssid(String v) {
         this._bssid = v;
+    }
+
+    public String get_name() {
+        return this._name;
+    }
+
+    public void set_name(String v) {
+        this._name = v;
     }
 
     public int get_level() {

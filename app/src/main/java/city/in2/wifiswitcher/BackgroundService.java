@@ -104,6 +104,23 @@ public class BackgroundService extends android.app.Service {
                 WifiInfo info = wifiManager.getConnectionInfo();
 
                 String SSID = info.getSSID().replace("\"", "");
+                String BSSID = info.getBSSID().replace("\"", "");
+
+                if (db.checkBSSID(BSSID) == 0) {
+                    db.addBSSID(new BSSID(ssid, BSSID, "", level, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+                    library._set("changes", String.valueOf(1));
+                } else {
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                    library.Toast("We are stuck here");
+                }
+
                 library.logImportant(SSID);
                 ssid = library._get("ssid");
                 if (info.getSSID().contains(ssid)) {

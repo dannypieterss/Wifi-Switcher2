@@ -5,21 +5,15 @@ public class Network {
     String _network, _ssid, _bssid, _level, _date_created;
     int _id;
 
-    public Network(int id, String network) {
+    public Network(int id, String network, String date_created) {
         this._id = id;
         this._network = network;
-//        this._ssid = ssid;
-//        this._bssid = bssid;
-//        this._level = level;
-//        this._date_created = date_created;
+        this._date_created = date_created;
     }
 
-    public Network(String network) {
+    public Network(String network, String date_created) {
         this._network = network;
-//        this._ssid = ssid;
-//        this._bssid = bssid;
-//        this._level = level;
-//        this._date_created = date_created;
+        this._date_created = date_created;
     }
 
     public Network() {
@@ -40,30 +34,6 @@ public class Network {
 
     public void set_network(String v) {
         this._network = v;
-    }
-
-    public String get_ssid() {
-        return this._ssid;
-    }
-
-    public void set_ssid(String v) {
-        this._ssid = v;
-    }
-
-    public String get_bssid() {
-        return this._bssid;
-    }
-
-    public void set_bssid(String v) {
-        this._bssid = v;
-    }
-
-    public String get_level() {
-        return this._level;
-    }
-
-    public void set_level(String v) {
-        this._level = v;
     }
 
     public String get_date_created() {
